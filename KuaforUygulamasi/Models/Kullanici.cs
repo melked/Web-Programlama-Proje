@@ -1,7 +1,9 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity;
+
 namespace KuaforUygulamasi.Models
 {
-    public class Kullanici
+    public class Kullanici : IdentityUser
     {
         public int ID { get; set; }
         public string Ad { get; set; }
