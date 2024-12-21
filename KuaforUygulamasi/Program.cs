@@ -5,9 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Veritabanı bağlantısını yapılandır
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Kimlik doğrulama için Identity'yi ekle
 builder.Services.AddDefaultIdentity<Kullanici>(options =>
