@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KuaforUygulamasi.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241221151249_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241222190630_UpdateMigration")]
+    partial class UpdateMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,7 +73,46 @@ namespace KuaforUygulamasi.Data.Migrations
                     b.ToTable("Islemler");
                 });
 
-            modelBuilder.Entity("KuaforUygulamasi.Models.Kullanici", b =>
+            modelBuilder.Entity("KuaforUygulamasi.Models.Randevu", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("CalisanID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Durum")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("IslemID")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("KullaniciID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("KullaniciId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Saat")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CalisanID");
+
+                    b.HasIndex("IslemID");
+
+                    b.HasIndex("KullaniciId");
+
+                    b.ToTable("Randevular");
+                });
+
+            modelBuilder.Entity("Kullanici", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -90,15 +129,11 @@ namespace KuaforUygulamasi.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
-
-                    b.Property<int>("ID")
-                        .HasColumnType("integer");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -155,45 +190,6 @@ namespace KuaforUygulamasi.Data.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("KuaforUygulamasi.Models.Randevu", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
-
-                    b.Property<int>("CalisanID")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Durum")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("IslemID")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("KullaniciID")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("KullaniciId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Saat")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("CalisanID");
-
-                    b.HasIndex("IslemID");
-
-                    b.HasIndex("KullaniciId");
-
-                    b.ToTable("Randevular");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -346,7 +342,7 @@ namespace KuaforUygulamasi.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KuaforUygulamasi.Models.Kullanici", "Kullanici")
+                    b.HasOne("Kullanici", "Kullanici")
                         .WithMany()
                         .HasForeignKey("KullaniciId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -370,7 +366,7 @@ namespace KuaforUygulamasi.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("KuaforUygulamasi.Models.Kullanici", null)
+                    b.HasOne("Kullanici", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -379,7 +375,7 @@ namespace KuaforUygulamasi.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("KuaforUygulamasi.Models.Kullanici", null)
+                    b.HasOne("Kullanici", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -394,7 +390,7 @@ namespace KuaforUygulamasi.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KuaforUygulamasi.Models.Kullanici", null)
+                    b.HasOne("Kullanici", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -403,7 +399,7 @@ namespace KuaforUygulamasi.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("KuaforUygulamasi.Models.Kullanici", null)
+                    b.HasOne("Kullanici", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

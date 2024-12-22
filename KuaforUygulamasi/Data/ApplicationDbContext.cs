@@ -13,7 +13,7 @@ namespace KuaforUygulamasi.Data
         }
 
         // Tabloları temsil eden DbSet'leri ekleyin.
-        public DbSet<Kullanici> Kullanicilar { get; set; }//????
+        public DbSet<Kullanici> Kullanicilar { get; set; }
         public DbSet<Randevu> Randevular { get; set; }
         public DbSet<Islem> Islemler { get; set; }
         public DbSet<Calisan> Calisanlar { get; set; }
