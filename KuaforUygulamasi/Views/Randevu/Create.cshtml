@@ -1,29 +1,35 @@
-﻿@model KuaforUygulamasi.Models.Randevu
+﻿@model KuaforUygulamasi.Models.RandevuViewModel
 
-<h2>Yeni Randevu Oluştur</h2>
+@{
+    ViewData["Title"] = "Randevu Al";
+}
 
-<form asp-action="Create" method="post">
-    <div class="form-group">
-        <label for="KullaniciID">Kullanıcı</label>
-        <input type="number" id="KullaniciID" name="KullaniciID" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="CalisanID">Çalışan</label>
-        <input type="number" id="CalisanID" name="CalisanID" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="IslemID">İşlem</label>
-        <input type="number" id="IslemID" name="IslemID" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="Saat">Saat</label>
-        <input type="datetime-local" id="Saat" name="Saat" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="Durum">Durum</label>
-        <input type="text" id="Durum" name="Durum" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary">Kaydet</button>
-</form>
+<div class="container mt-5">
+    <h2>Randevu Al</h2>
+    <form asp-action="Create" method="post">
+        <div class="form-group">
+            <label for="Islem">Hizmet Seçimi</label>
+            <select id="Islem" name="IslemID" class="form-control">
+                @foreach (var islem in Model.IslemListesi)
+                {
+                    <option value="@islem.ID">@islem.Ad - @islem.Ucret ₺</option>
+                }
+            </select>
+        </div>
+        <div class="form-group mt-3">
+            <label for="Calisan">Çalışan Seçimi</label>
+            <select id="Calisan" name="CalisanID" class="form-control">
+                @foreach (var calisan in Model.CalisanListesi)
+                {
+                    <option value="@calisan.ID">@calisan.Ad @calisan.Soyad</option>
 
-<a href="@Url.Action("Index", "Randevu")" class="btn btn-secondary">Geri</a>
+                }
+            </select>
+        </div>
+        <div class="form-group mt-3">
+            <label for="TarihSaat">Tarih ve Saat</label>
+            <input type="datetime-local" id="TarihSaat" name="Saat" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Randevu Al</button>
+    </form>
+</div>

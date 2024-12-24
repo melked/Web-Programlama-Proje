@@ -4,6 +4,7 @@
     {
         public int ID { get; set; }
         public string Ad { get; set; }
+        public string Soyad { get; set; }
         public string UzmanlikAlanlari { get; set; }
         public string MusaitlikSaatleri { get; set; }
     }
