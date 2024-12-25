@@ -63,7 +63,6 @@ namespace KuaforUygulamasi.Controllers
             return Ok(randevu);
         }
 
-        // POST: api/Randevu
         [HttpPost]
         public async Task<ActionResult> CreateRandevu([FromBody] Randevu randevu)
         {
@@ -92,6 +91,7 @@ namespace KuaforUygulamasi.Controllers
 
             return CreatedAtAction(nameof(GetRandevuById), new { id = randevu.ID }, randevu);
         }
+
 
         // PUT: api/Randevu/{id}
         [HttpPut("{id}")]
