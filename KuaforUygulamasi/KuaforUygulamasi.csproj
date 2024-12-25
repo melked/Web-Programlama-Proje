@@ -26,8 +26,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Views\Account\" />
+    <None Remove="Views\Calisan\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Account\" />
+    <Folder Include="Views\Calisan\" />
   </ItemGroup>
 </Project>

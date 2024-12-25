@@ -1,0 +1,23 @@
+﻿@model IEnumerable<KuaforUygulamasi.Models.Calisan>
+
+<h2>Çalışan Listesi</h2>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Ad</th>
+        <th>Soyad</th>
+        <th>Uzmanlık Alanları</th>
+        <th>Müsaitlik Saatleri</th>
+    </tr>
+    @foreach (var calisan in Model)
+    {
+        <tr>
+            <td>@calisan.ID</td>
+            <td>@calisan.Ad</td>
+            <td>@calisan.Soyad</td>
+            <td>@calisan.UzmanlikAlanlari</td>
+            <td>@calisan.MusaitlikSaatleri</td>
+        </tr>
+    }
+</table>
+<a href="/Calisan/Create">Yeni Çalışan Ekle</a>

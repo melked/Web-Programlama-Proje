@@ -7,29 +7,49 @@
 <div class="container mt-5">
     <h2>Randevu Al</h2>
     <form asp-controller="Randevu" asp-action="CreateRandevu" method="post">
+        <!-- Kullanıcı Seçimi -->
         <div class="form-group">
-            <label for="Islem">Hizmet Seçimi</label>
-            <select id="Islem" name="IslemID" class="form-control">
-                @foreach (var islem in Model.IslemListesi)
+            <label for="KullaniciID">Kullanıcı Seçimi</label>
+            <select id="KullaniciID" name="KullaniciID" class="form-control" required>
+                <option value="">Kullanıcı Seçin</option>
+                @foreach (var kullanici in Model.KullaniciListesi)
                 {
-                    <option value="@islem.ID">@islem.Ad - @islem.Ucret ₺</option>
+                    <option value="@kullanici.Id">@kullanici.UserName</option>
                 }
             </select>
         </div>
+
+        <!-- Çalışan Seçimi -->
         <div class="form-group mt-3">
-            <label for="Calisan">Çalışan Seçimi</label>
-            <select id="Calisan" name="CalisanID" class="form-control">
+            <label for="CalisanID">Çalışan Seçimi</label>
+            <select id="CalisanID" name="CalisanID" class="form-control" required>
+                <option value="">Çalışan Seçin</option>
                 @foreach (var calisan in Model.CalisanListesi)
                 {
                     <option value="@calisan.ID">@calisan.Ad @calisan.Soyad</option>
                 }
             </select>
         </div>
+
+
+        <!-- Hizmet Seçimi -->
         <div class="form-group mt-3">
-            <label for="TarihSaat">Tarih ve Saat</label>
-            <input type="datetime-local" id="TarihSaat" name="Saat" class="form-control" required />
+            <label for="IslemID">Hizmet Seçimi</label>
+            <select id="IslemID" name="IslemID" class="form-control" required>
+                <option value="">Hizmet Seçin</option>
+                @foreach (var islem in Model.IslemListesi)
+                {
+                    <option value="@islem.ID">@islem.Ad - @islem.Ucret ₺</option>
+                }
+            </select>
         </div>
+
+        <!-- Tarih ve Saat Seçimi -->
+        <div class="form-group mt-3">
+            <label for="Saat">Tarih ve Saat</label>
+            <input type="datetime-local" id="Saat" name="Saat" class="form-control" required />
+        </div>
+
         <button type="submit" class="btn btn-primary mt-3">Randevu Al</button>
     </form>
-
 </div>

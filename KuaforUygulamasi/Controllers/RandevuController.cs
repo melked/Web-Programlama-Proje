@@ -1,178 +1,74 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using KuaforUygulamasi.Data;
+using KuaforUygulamasi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using KuaforUygulamasi.Models;
-using KuaforUygulamasi.Data;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace KuaforUygulamasi.Controllers
+public class RandevuController : Controller
 {
-    [ApiController]
-    [Route("[controller]")]
+    private readonly ApplicationDbContext _context;
+    private readonly ILogger<RandevuController> _logger;
 
-    [Authorize]
-    public class RandevuController : ControllerBase
+    public RandevuController(ApplicationDbContext context, ILogger<RandevuController> logger)
     {
-        private readonly ApplicationDbContext _context;
-        private readonly ILogger<RandevuController> _logger;
+        _context = context;
+        _logger = logger;
+    }
 
-        public RandevuController(ApplicationDbContext context, ILogger<RandevuController> logger)
+    // GET: Randevu/CreateRandevu
+    [HttpGet]
+    public IActionResult CreateRandevu()
+    {
+        // Initialize the view model and provide lists for select options
+        return View(new RandevuViewModel()
         {
-            _context = context;
-            _logger = logger;
+            IslemListesi = _context.Islemler.ToList(),
+            CalisanListesi = _context.Calisanlar.ToList(),
+            KullaniciListesi = _context.Users.ToList()
+        });
+    }
+
+    // POST: Randevu/CreateRandevu
+    [HttpPost]
+    public async Task<IActionResult> CreateRandevu(RandevuViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            // Eğer model geçerli değilse, kullanıcıyı aynı sayfada tutuyoruz ve hataları gösteriyoruz
+            model.IslemListesi = _context.Islemler.ToList();
+            model.CalisanListesi = _context.Calisanlar.ToList();
+            model.KullaniciListesi = _context.Users.ToList();
+            return View(model);
         }
 
-        // GET: api/Randevu
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Randevu>>> GetAllRandevular(int page = 1, int pageSize = 10)
+        // Randevu nesnesini oluşturuyoruz
+        var randevu = new Randevu
         {
-            _logger.LogInformation("Tüm randevular getiriliyor.");
+            KullaniciID = model.KullaniciID,
+            CalisanID = model.CalisanID,
+            IslemID = model.IslemID,
+            Saat = model.Saat,
+            Durum = "Beklemede"  // Varsayılan durum
+        };
 
-            var randevular = await _context.Randevular
-                .Include(r => r.Kullanici)
-                .Include(r => r.Calisan)
-                .Include(r => r.Islem)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+        // Çakışma kontrolü (aynı çalışan ve saat için randevu varsa)
+        bool isOverlapping = await _context.Randevular.AnyAsync(r =>
+            r.CalisanID == randevu.CalisanID && r.Saat == randevu.Saat);
 
-            return Ok(randevular);
+        if (isOverlapping)
+        {
+            ModelState.AddModelError("", "Seçilen saat ve çalışan için randevu zaten mevcut.");
+            model.IslemListesi = _context.Islemler.ToList();
+            model.CalisanListesi = _context.Calisanlar.ToList();
+            model.KullaniciListesi = _context.Users.ToList();
+            return View(model);
         }
 
-        // GET: api/Randevu/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Randevu>> GetRandevuById(int id)
-        {
-            _logger.LogInformation($"Randevu ID {id} getiriliyor.");
+        // Randevuyu ekliyoruz
+        _context.Randevular.Add(randevu);
+        await _context.SaveChangesAsync();
 
-            var randevu = await _context.Randevular
-                .Include(r => r.Kullanici)
-                .Include(r => r.Calisan)
-                .Include(r => r.Islem)
-                .FirstOrDefaultAsync(r => r.ID == id);
-
-            if (randevu == null)
-            {
-                _logger.LogWarning($"Randevu ID {id} bulunamadı.");
-                return NotFound(new { Message = $"Randevu ID {id} bulunamadı." });
-            }
-
-            return Ok(randevu);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> CreateRandevu([FromBody] Randevu randevu)
-        {
-            _logger.LogInformation("Yeni randevu oluşturuluyor.");
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new { Message = "Geçersiz veri.", Errors = ModelState });
-            }
-
-            // Çakışma kontrolü
-            bool isOverlapping = await _context.Randevular.AnyAsync(r =>
-                r.CalisanID == randevu.CalisanID &&
-                r.Saat == randevu.Saat);
-
-            if (isOverlapping)
-            {
-                return BadRequest(new { Message = "Seçilen saat ve çalışan için randevu zaten mevcut." });
-            }
-
-            randevu.Durum = "Beklemede";
-            _context.Randevular.Add(randevu);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation($"Randevu ID {randevu.ID} başarıyla oluşturuldu.");
-
-            return CreatedAtAction(nameof(GetRandevuById), new { id = randevu.ID }, randevu);
-        }
-
-
-        // PUT: api/Randevu/{id}
-        [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateRandevu(int id, [FromBody] Randevu randevu)
-        {
-            if (id != randevu.ID)
-            {
-                return BadRequest(new { Message = "Randevu ID uyuşmuyor." });
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new { Message = "Geçersiz veri.", Errors = ModelState });
-            }
-
-            var existingRandevu = await _context.Randevular.FindAsync(id);
-
-            if (existingRandevu == null)
-            {
-                return NotFound(new { Message = $"Randevu ID {id} bulunamadı." });
-            }
-
-            existingRandevu.KullaniciID = randevu.KullaniciID;
-            existingRandevu.CalisanID = randevu.CalisanID;
-            existingRandevu.IslemID = randevu.IslemID;
-            existingRandevu.Saat = randevu.Saat;
-            existingRandevu.Durum = randevu.Durum;
-
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation($"Randevu ID {id} başarıyla güncellendi.");
-            return NoContent();
-        }
-
-        // DELETE: api/Randevu/{id}
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> DeleteRandevu(int id)
-        {
-            var randevu = await _context.Randevular.FindAsync(id);
-
-            if (randevu == null)
-            {
-                _logger.LogWarning($"Randevu ID {id} bulunamadı.");
-                return NotFound(new { Message = $"Randevu ID {id} bulunamadı." });
-            }
-
-            _context.Randevular.Remove(randevu);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation($"Randevu ID {id} başarıyla silindi.");
-            return NoContent();
-        }
-
-        // GET: api/Randevu/search
-        [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<Randevu>>> SearchRandevular(DateTime? startDate, DateTime? endDate, int? calisanId, int? kullaniciId)
-        {
-            _logger.LogInformation("Randevu arama işlemi başlatıldı.");
-
-            var query = _context.Randevular.AsQueryable();
-
-            if (startDate.HasValue)
-                query = query.Where(r => r.Saat >= startDate);
-
-            if (endDate.HasValue)
-                query = query.Where(r => r.Saat <= endDate);
-
-            if (calisanId.HasValue)
-                query = query.Where(r => r.CalisanID == calisanId);
-
-            if (kullaniciId.HasValue)
-                query = query.Where(r => r.KullaniciID == kullaniciId);
-
-            var randevular = await query
-                .Include(r => r.Kullanici)
-                .Include(r => r.Calisan)
-                .Include(r => r.Islem)
-                .ToListAsync();
-
-            return Ok(randevular);
-        }
+        // Başarıyla ekledikten sonra yönlendirme yapıyoruz
+        _logger.LogInformation($"Randevu ID {randevu.ID} başarıyla oluşturuldu.");
+        return RedirectToAction("Index", "Home");
     }
 }
