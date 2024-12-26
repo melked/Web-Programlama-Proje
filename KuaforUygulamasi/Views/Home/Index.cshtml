@@ -5,6 +5,13 @@
 <div class="container text-center mt-5">
     <h1>Kuaför Salonu Yönetim Sistemi</h1>
     <p>En iyi hizmet için buradayız!</p>
-    <a href="/Randevu/Create" class="btn btn-primary mt-3">Randevu Al</a>
-    <a href="/Account/Login" class="btn btn-secondary mt-3">Giriş Yap</a>
+    @if (User?.Identity?.IsAuthenticated == true)
+    {
+        <a href="/Randevu/CreateRandevu" class="btn btn-primary">Randevu Al</a>
+    }
+    else
+    {
+        <p class="text-muted">Randevu almak için giriş yapmanız gerekiyor.</p>
+        <a href="/Account/Login" class="btn btn-secondary mt-3">Giriş Yap</a>
+    }
 </div>

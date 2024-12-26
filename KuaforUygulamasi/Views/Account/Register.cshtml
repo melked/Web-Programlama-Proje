@@ -2,22 +2,22 @@
     ViewData["Title"] = "Register";
 }
 <h2>Register</h2>
-<form method="post">
-    <div>
-        <label>Email</label>
-        <input type="email" name="email" required />
+<form method="post" asp-controller="Account" asp-action="Register">
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required />
     </div>
-    <div>
-        <label>Password</label>
-        <input type="password" name="sifre" required />
+    <div class="form-group">
+        <label for="sifre">Password</label>
+        <input type="password" id="sifre" name="sifre" class="form-control" placeholder="Enter your password" required />
     </div>
-    <div>
-        <label>First Name</label>
-        <input type="text" name="ad" required />
+    <div class="form-group">
+        <label for="ad">First Name</label>
+        <input type="text" id="ad" name="ad" class="form-control" placeholder="Enter your first name" required />
     </div>
-    <div>
-        <label>Last Name</label>
-        <input type="text" name="soyad" required />
+    <div class="form-group">
+        <label for="soyad">Last Name</label>
+        <input type="text" id="soyad" name="soyad" class="form-control" placeholder="Enter your last name" required />
     </div>
-    <button type="submit">Register</button>
+    <button type="submit" class="btn btn-primary mt-3">Register</button>
 </form>
