@@ -1,15 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using KuaforUygulamasi.Data;
 using KuaforUygulamasi.Models;
 
 namespace KuaforUygulamasi.Controllers
 {
     public class CalisanController : Controller
     {
-        // Geçici liste (veritabanı yerine)
-        private static List<Calisan> calisanlar = new List<Calisan>();
+        private readonly ApplicationDbContext _context;
+
+        public CalisanController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
         public IActionResult Index()
         {
+            var calisanlar = _context.Calisanlar.ToList();
             return View(calisanlar);
         }
 
@@ -23,8 +29,8 @@ namespace KuaforUygulamasi.Controllers
         {
             if (ModelState.IsValid)
             {
-                calisan.ID = calisanlar.Count + 1;
-                calisanlar.Add(calisan);
+                _context.Calisanlar.Add(calisan);
+                _context.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(calisan);

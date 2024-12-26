@@ -52,10 +52,16 @@ app.UseAuthorization();  // Yetkilendirme
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.MapControllerRoute(
     name: "randevu",
     pattern: "Randevu/{action=Create}/{id?}",
     defaults: new { controller = "Randevu" });
+
+app.MapControllerRoute(
+    name: "calisan",
+    pattern: "Calisan/{action=Create}/{id?}",
+    defaults: new { controller = "Calisan" });
 
 
 app.Run();
