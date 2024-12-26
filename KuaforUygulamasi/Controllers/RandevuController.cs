@@ -71,8 +71,5 @@ public class RandevuController : Controller
         _logger.LogInformation($"Randevu ID {randevu.ID} başarıyla oluşturuldu.");
         return RedirectToAction("Index", "Home");
     }
-<<<<<<< HEAD
+
 }
-=======
-}
->>>>>>> feature-branch
