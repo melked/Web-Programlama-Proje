@@ -2,11 +2,11 @@
 
 <h2>Randevu Listesi</h2>
 
-<table class="table">
+<table>
     <thead>
         <tr>
             <th>ID</th>
-            <th>Kullanıcı</th>
+            <th>Müşteri</th>
             <th>Çalışan</th>
             <th>İşlem</th>
             <th>Saat</th>
@@ -19,19 +19,20 @@
         {
             <tr>
                 <td>@randevu.ID</td>
-                <td>@randevu.Kullanici?.Ad</td>
-                <td>@randevu.Calisan?.Ad</td>
+                <td>@randevu.Kullanici?.UserName</td>
+                <td>@randevu.Calisan?.Ad @randevu.Calisan?.Soyad</td>
                 <td>@randevu.Islem?.Ad</td>
-                <td>@randevu.Saat.ToString("g")</td>
+                <td>@randevu.Saat.ToLocalTime()</td>
                 <td>@randevu.Durum</td>
                 <td>
-                    <a href="@Url.Action("Details", "Randevu", new { id = randevu.ID })">Detay</a> |
-                    <a href="@Url.Action("Edit", "Randevu", new { id = randevu.ID })">Düzenle</a> |
-                    <a href="@Url.Action("Delete", "Randevu", new { id = randevu.ID })">Sil</a>
+                    <a asp-action="Details" asp-route-id="@randevu.ID">Detaylar</a> |
+                    <a asp-action="Edit" asp-route-id="@randevu.ID">Düzenle</a> |
+                    <a asp-action="Delete" asp-route-id="@randevu.ID">Sil</a>
+                    
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<a href="@Url.Action("Create", "Randevu")" class="btn btn-primary">Yeni Randevu Ekle</a>
+<a asp-action="Create" class="btn btn-primary">Yeni Randevu Ekle</a>

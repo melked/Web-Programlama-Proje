@@ -1,0 +1,32 @@
+﻿@model KuaforUygulamasi.Models.Randevu
+
+<h2>Randevu Detayı</h2>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <td>@Model.ID</td>
+    </tr>
+    <tr>
+        <th>Müşteri</th>
+        <td>@Model.Kullanici?.UserName</td>
+    </tr>
+    <tr>
+        <th>Çalışan</th>
+        <td>@Model.Calisan?.Ad @Model.Calisan?.Soyad</td>
+    </tr>
+    <tr>
+        <th>İşlem</th>
+        <td>@Model.Islem?.Ad</td>
+    </tr>
+    <tr>
+        <th>Saat</th>
+        <td>@Model.Saat.ToLocalTime()</td>
+    </tr>
+    <tr>
+        <th>Durum</th>
+        <td>@Model.Durum</td>
+    </tr>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Geri</a>

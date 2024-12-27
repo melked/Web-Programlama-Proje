@@ -31,7 +31,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Account\" />
-    <Folder Include="Views\Calisan\" />
     <Folder Include="Views\Islem\" />
   </ItemGroup>
   <ItemGroup>

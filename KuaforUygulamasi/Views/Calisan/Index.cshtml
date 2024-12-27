@@ -1,30 +1,43 @@
 ﻿@model IEnumerable<KuaforUygulamasi.Models.Calisan>
 
-<h2>Çalışan Listesi</h2>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Ad</th>
-            <th>Soyad</th>
-            <th>Uzmanlık Alanları</th>
-            <th>Müsaitlik Saatleri</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var calisan in Model)
-        {
+@{
+    ViewData["Title"] = "Çalışan Listesi";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Yeni Çalışan Ekle</a>
+    </p>
+
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>@calisan.ID</td>
-                <td>@calisan.Ad</td>
-                <td>@calisan.Soyad</td>
-                <td>@calisan.UzmanlikAlanlari</td>
-                <td>
-                    @calisan.MusaitlikBaslangic.ToString(@"hh\:mm") -
-                    @calisan.MusaitlikBitis.ToString(@"hh\:mm")
-                </td>
+                <th>@Html.DisplayNameFor(model => model.ID)</th>
+                <th>@Html.DisplayNameFor(model => model.Ad)</th>
+                <th>@Html.DisplayNameFor(model => model.Soyad)</th>
+                <th>@Html.DisplayNameFor(model => model.UzmanlikAlanlari)</th>
+                <th>Müsaitlik Saatleri</th>
+                <th>İşlemler</th>
             </tr>
-        }
-    </tbody>
-</table>
-<a href="/Calisan/Create" class="btn btn-success">Yeni Çalışan Ekle</a>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ID</td>
+                    <td>@item.Ad</td>
+                    <td>@item.Soyad</td>
+                    <td>@string.Join(", ", item.UzmanlikAlanlari)</td>
+                    <td>@item.MusaitlikBaslangic.ToString(@"hh\:mm") - @item.MusaitlikBitis.ToString(@"hh\:mm")</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.ID" class="btn btn-sm btn-primary">Düzenle</a>
+                        <a asp-action="Details" asp-route-id="@item.ID" class="btn btn-sm btn-info">Detaylar</a>
+                        <a asp-action="Delete" asp-route-id="@item.ID" class="btn btn-sm btn-danger">Sil</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

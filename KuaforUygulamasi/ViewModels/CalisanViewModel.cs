@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using KuaforUygulamasi.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace KuaforUygulamasi.Models
+namespace KuaforUygulamasi.ViewModels
 {
-    public class Calisan
+    public class CalisanViewModel
     {
         public int ID { get; set; }
 
@@ -16,7 +17,7 @@ namespace KuaforUygulamasi.Models
 
         [Required(ErrorMessage = "En az bir uzmanlık alanı seçilmelidir.")]
         [Display(Name = "Uzmanlık Alanları")]
-        public List<UzmanlikAlani> UzmanlikAlanlari { get; set; } = new List<UzmanlikAlani>();
+        public List<UzmanlikAlani> SelectedUzmanlikAlanlari { get; set; } = new List<UzmanlikAlani>();
 
         [Required(ErrorMessage = "Müsaitlik başlangıç saati zorunludur.")]
         [DataType(DataType.Time)]
@@ -27,5 +28,7 @@ namespace KuaforUygulamasi.Models
         [DataType(DataType.Time)]
         [Display(Name = "Mesai Bitiş")]
         public TimeSpan MusaitlikBitis { get; set; }
+
+        public List<UzmanlikAlani> TumUzmanlikAlanlari => Enum.GetValues<UzmanlikAlani>().ToList();
     }
 }

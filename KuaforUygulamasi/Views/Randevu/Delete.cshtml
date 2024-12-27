@@ -1,0 +1,43 @@
+﻿@model KuaforUygulamasi.Models.Randevu
+
+@{
+    ViewData["Title"] = "Randevu Sil";
+}
+
+<div class="container mt-4">
+    <h2>Randevu Silme Onayı</h2>
+    <div class="alert alert-warning">
+        <h4>Bu randevuyu silmek istediğinizden emin misiniz?</h4>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Müşteri</dt>
+                <dd class="col-sm-9">@Model.Kullanici?.UserName</dd>
+
+                <dt class="col-sm-3">Çalışan</dt>
+                <dd class="col-sm-9">@Model.Calisan?.Ad @Model.Calisan?.Soyad</dd>
+
+                <dt class="col-sm-3">İşlem</dt>
+                <dd class="col-sm-9">@Model.Islem?.Ad</dd>
+
+                <dt class="col-sm-3">Randevu Saati</dt>
+                <dd class="col-sm-9">@Model.Saat.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</dd>
+
+                <dt class="col-sm-3">Durum</dt>
+                <dd class="col-sm-9">@Model.Durum</dd>
+            </dl>
+        </div>
+    </div>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="ID" />
+        @Html.AntiForgeryToken()
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-danger">Randevuyu Sil</button>
+            <a asp-action="Index" class="btn btn-secondary">İptal</a>
+        </div>
+    </form>
+</div>

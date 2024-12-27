@@ -1,0 +1,41 @@
+﻿@model KuaforUygulamasi.Models.Calisan
+
+@{
+    ViewData["Title"] = "Çalışan Sil";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    <div class="alert alert-danger">
+        <h4>Bu çalışanı silmek istediğinizden emin misiniz?</h4>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Ad)</dt>
+                <dd class="col-sm-9">@Model.Ad</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Soyad)</dt>
+                <dd class="col-sm-9">@Model.Soyad</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.UzmanlikAlanlari)</dt>
+                <dd class="col-sm-9">@string.Join(", ", Model.UzmanlikAlanlari)</dd>
+
+                <dt class="col-sm-3">Çalışma Saatleri</dt>
+                <dd class="col-sm-9">@Model.MusaitlikBaslangic.ToString(@"hh\:mm") - @Model.MusaitlikBitis.ToString(@"hh\:mm")</dd>
+            </dl>
+        </div>
+    </div>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="ID" />
+        @Html.AntiForgeryToken()
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-danger">Sil</button>
+            <a asp-action="Index" class="btn btn-secondary">İptal</a>
+        </div>
+    </form>
+</div>
