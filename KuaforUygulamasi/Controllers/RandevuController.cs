@@ -14,62 +14,103 @@ public class RandevuController : Controller
         _logger = logger;
     }
 
-    // GET: Randevu/CreateRandevu
     [HttpGet]
-    public IActionResult CreateRandevu()
+    public IActionResult Create()
     {
-        // Initialize the view model and provide lists for select options
-        return View(new RandevuViewModel()
+        try
         {
-            IslemListesi = _context.Islemler.ToList(),
-            CalisanListesi = _context.Calisanlar.ToList(),
-            KullaniciListesi = _context.Users.ToList()
-        });
+            var viewModel = new RandevuViewModel()
+            {
+                IslemListesi = _context.Islemler.ToList(),
+                CalisanListesi = _context.Calisanlar.ToList(),
+                KullaniciListesi = _context.Users.ToList()
+            };
+            return View(viewModel);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Randevu oluşturma sayfası yüklenirken hata: {ex.Message}");
+            TempData["ErrorMessage"] = "Sayfa yüklenirken bir hata oluştu.";
+            return RedirectToAction("Index", "Home");
+        }
     }
 
-    // POST: Randevu/CreateRandevu
     [HttpPost]
-    public async Task<IActionResult> CreateRandevu(RandevuViewModel model)
+    public async Task<IActionResult> Create(RandevuViewModel model)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            // Eğer model geçerli değilse, kullanıcıyı aynı sayfada tutuyoruz ve hataları gösteriyoruz
-            model.IslemListesi = _context.Islemler.ToList();
-            model.CalisanListesi = _context.Calisanlar.ToList();
-            model.KullaniciListesi = _context.Users.ToList();
-            return View(model);
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Geçersiz model durumu: " + string.Join("; ", ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)));
+
+                model.IslemListesi = await _context.Islemler.ToListAsync();
+                model.CalisanListesi = await _context.Calisanlar.ToListAsync();
+                model.KullaniciListesi = await _context.Users.ToListAsync();
+                return View(model);
+            }
+
+            // Geçmiş tarih kontrolü
+            if (model.Saat < DateTime.Now)
+            {
+                ModelState.AddModelError("Saat", "Geçmiş bir tarih seçilemez.");
+                model.IslemListesi = await _context.Islemler.ToListAsync();
+                model.CalisanListesi = await _context.Calisanlar.ToListAsync();
+                model.KullaniciListesi = await _context.Users.ToListAsync();
+                return View(model);
+            }
+
+            // Yeni Randevu nesnesi oluşturma
+            var randevu = new Randevu
+            {
+                KullaniciID = model.KullaniciID,
+                CalisanID = model.CalisanID,
+                IslemID = model.IslemID,
+                Saat = model.Saat,
+                Durum = "Beklemede"
+            };
+
+            // Çalışanın o saatlerde başka bir randevusu var mı?
+            bool isOverlapping = await _context.Randevular.AnyAsync(r =>
+                r.CalisanID == randevu.CalisanID &&
+                r.Saat <= randevu.Saat.AddMinutes(30) &&
+                r.Saat >= randevu.Saat.AddMinutes(-30));
+
+            if (isOverlapping)
+            {
+                ModelState.AddModelError("", "Seçilen saat ve çalışan için randevu zaten mevcut.");
+                model.IslemListesi = await _context.Islemler.ToListAsync();
+                model.CalisanListesi = await _context.Calisanlar.ToListAsync();
+                model.KullaniciListesi = await _context.Users.ToListAsync();
+                return View(model);
+            }
+
+            // Veritabanına ekleme
+            try
+            {
+                _context.Randevular.Add(randevu);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation($"Randevu ID {randevu.ID} başarıyla oluşturuldu.");
+                TempData["SuccessMessage"] = "Randevu başarıyla oluşturuldu.";
+                return RedirectToAction("Index", "Home");
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError($"Randevu kaydedilirken veritabanı hatası: {ex.Message}");
+                ModelState.AddModelError("", "Randevu kaydedilirken bir hata oluştu.");
+                model.IslemListesi = await _context.Islemler.ToListAsync();
+                model.CalisanListesi = await _context.Calisanlar.ToListAsync();
+                model.KullaniciListesi = await _context.Users.ToListAsync();
+                return View(model);
+            }
         }
-
-        // Randevu nesnesini oluşturuyoruz
-        var randevu = new Randevu
+        catch (Exception ex)
         {
-            KullaniciID = model.KullaniciID,
-            CalisanID = model.CalisanID,
-            IslemID = model.IslemID,
-            Saat = model.Saat,
-            Durum = "Beklemede"  // Varsayılan durum
-        };
-
-        // Çakışma kontrolü (aynı çalışan ve saat için randevu varsa)
-        bool isOverlapping = await _context.Randevular.AnyAsync(r =>
-            r.CalisanID == randevu.CalisanID && r.Saat == randevu.Saat);
-
-        if (isOverlapping)
-        {
-            ModelState.AddModelError("", "Seçilen saat ve çalışan için randevu zaten mevcut.");
-            model.IslemListesi = _context.Islemler.ToList();
-            model.CalisanListesi = _context.Calisanlar.ToList();
-            model.KullaniciListesi = _context.Users.ToList();
-            return View(model);
+            _logger.LogError($"Randevu oluşturulurken beklenmeyen hata: {ex.Message}");
+            TempData["ErrorMessage"] = "Randevu oluşturulurken bir hata oluştu.";
+            return RedirectToAction("Index", "Home");
         }
-
-        // Randevuyu ekliyoruz
-        _context.Randevular.Add(randevu);
-        await _context.SaveChangesAsync();
-
-        // Başarıyla ekledikten sonra yönlendirme yapıyoruz
-        _logger.LogInformation($"Randevu ID {randevu.ID} başarıyla oluşturuldu.");
-        return RedirectToAction("Index", "Home");
     }
-
 }

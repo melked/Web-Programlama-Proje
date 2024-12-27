@@ -63,5 +63,10 @@ app.MapControllerRoute(
     pattern: "Calisan/{action=Create}/{id?}",
     defaults: new { controller = "Calisan" });
 
+app.MapControllerRoute(
+    name: "islem",
+    pattern: "Islem/{action=Index}/{id?}",
+    defaults: new { controller = "Islem" });
+
 
 app.Run();

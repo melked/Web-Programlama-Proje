@@ -1,13 +1,8 @@
 ﻿@model KuaforUygulamasi.Models.RandevuViewModel
 
-@{
-    ViewData["Title"] = "Randevu Al";
-}
-
 <div class="container mt-5">
     <h2>Randevu Al</h2>
-    <form asp-controller="Randevu" asp-action="CreateRandevu" method="post">
-        <!-- Kullanıcı Seçimi -->
+    <form asp-controller="Randevu" asp-action="Create" method="post">
         <div class="form-group">
             <label for="KullaniciID">Kullanıcı Seçimi</label>
             <select id="KullaniciID" name="KullaniciID" class="form-control" required>
@@ -18,8 +13,6 @@
                 }
             </select>
         </div>
-
-        <!-- Çalışan Seçimi -->
         <div class="form-group mt-3">
             <label for="CalisanID">Çalışan Seçimi</label>
             <select id="CalisanID" name="CalisanID" class="form-control" required>
@@ -30,9 +23,6 @@
                 }
             </select>
         </div>
-
-
-        <!-- Hizmet Seçimi -->
         <div class="form-group mt-3">
             <label for="IslemID">Hizmet Seçimi</label>
             <select id="IslemID" name="IslemID" class="form-control" required>
@@ -43,13 +33,10 @@
                 }
             </select>
         </div>
-
-        <!-- Tarih ve Saat Seçimi -->
         <div class="form-group mt-3">
             <label for="Saat">Tarih ve Saat</label>
             <input type="datetime-local" id="Saat" name="Saat" class="form-control" required />
         </div>
-
-      //  <button type="submit" class="btn btn-primary mt-3">Randevu Al</button>
+        <button type="submit" class="btn btn-primary mt-3">Randevu Al</button>
     </form>
 </div>
