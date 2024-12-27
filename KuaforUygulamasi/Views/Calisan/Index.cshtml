@@ -1,23 +1,30 @@
 ﻿@model IEnumerable<KuaforUygulamasi.Models.Calisan>
 
 <h2>Çalışan Listesi</h2>
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Ad</th>
-        <th>Soyad</th>
-        <th>Uzmanlık Alanları</th>
-        <th>Müsaitlik Saatleri</th>
-    </tr>
-    @foreach (var calisan in Model)
-    {
+<table class="table table-bordered">
+    <thead>
         <tr>
-            <td>@calisan.ID</td>
-            <td>@calisan.Ad</td>
-            <td>@calisan.Soyad</td>
-            <td>@calisan.UzmanlikAlanlari</td>
-            <td>@calisan.MusaitlikSaatleri</td>
+            <th>ID</th>
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>Uzmanlık Alanları</th>
+            <th>Müsaitlik Saatleri</th>
         </tr>
-    }
+    </thead>
+    <tbody>
+        @foreach (var calisan in Model)
+        {
+            <tr>
+                <td>@calisan.ID</td>
+                <td>@calisan.Ad</td>
+                <td>@calisan.Soyad</td>
+                <td>@calisan.UzmanlikAlanlari</td>
+                <td>
+                    @calisan.MusaitlikBaslangic.ToString(@"hh\:mm") -
+                    @calisan.MusaitlikBitis.ToString(@"hh\:mm")
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
-<a href="/Calisan/Create">Yeni Çalışan Ekle</a>
+<a href="/Calisan/Create" class="btn btn-success">Yeni Çalışan Ekle</a>

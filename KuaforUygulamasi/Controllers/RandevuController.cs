@@ -42,41 +42,52 @@ public class RandevuController : Controller
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogWarning("Geçersiz model durumu: " + string.Join("; ", ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)));
-
                 model.IslemListesi = await _context.Islemler.ToListAsync();
                 model.CalisanListesi = await _context.Calisanlar.ToListAsync();
                 model.KullaniciListesi = await _context.Users.ToListAsync();
                 return View(model);
             }
 
-            // Geçmiş tarih kontrolü
-            if (model.Saat < DateTime.Now)
+            // Çalışanın bilgilerini al
+            var calisan = await _context.Calisanlar.FindAsync(model.CalisanID);
+            if (calisan == null)
             {
-                ModelState.AddModelError("Saat", "Geçmiş bir tarih seçilemez.");
+                ModelState.AddModelError("", "Seçilen çalışan bulunamadı.");
                 model.IslemListesi = await _context.Islemler.ToListAsync();
                 model.CalisanListesi = await _context.Calisanlar.ToListAsync();
                 model.KullaniciListesi = await _context.Users.ToListAsync();
                 return View(model);
             }
 
-            // Yeni Randevu nesnesi oluşturma
-            var randevu = new Randevu
+            // İşlemin bilgilerini al
+            var islem = await _context.Islemler.FindAsync(model.IslemID);
+            if (islem == null)
             {
-                KullaniciID = model.KullaniciID,
-                CalisanID = model.CalisanID,
-                IslemID = model.IslemID,
-                Saat = model.Saat,
-                Durum = "Beklemede"
-            };
+                ModelState.AddModelError("", "Seçilen işlem bulunamadı.");
+                model.IslemListesi = await _context.Islemler.ToListAsync();
+                model.CalisanListesi = await _context.Calisanlar.ToListAsync();
+                model.KullaniciListesi = await _context.Users.ToListAsync();
+                return View(model);
+            }
 
-            // Çalışanın o saatlerde başka bir randevusu var mı?
+            // Çalışanın müsaitlik saatleriyle randevu saatini kontrol et
+            DateTime randevuBitisSaati = model.Saat.AddMinutes(islem.Sure);
+            if (model.Saat.TimeOfDay < calisan.MusaitlikBaslangic || randevuBitisSaati.TimeOfDay > calisan.MusaitlikBitis)
+            {
+                ModelState.AddModelError("Saat", $"Çalışan {calisan.Ad} sadece {calisan.MusaitlikBaslangic} - {calisan.MusaitlikBitis} saatleri arasında müsait.");
+                model.IslemListesi = await _context.Islemler.ToListAsync();
+                model.CalisanListesi = await _context.Calisanlar.ToListAsync();
+                model.KullaniciListesi = await _context.Users.ToListAsync();
+                return View(model);
+            }
+
+            // Çalışanın aynı saatlerde başka bir randevusu var mı?
             bool isOverlapping = await _context.Randevular.AnyAsync(r =>
-                r.CalisanID == randevu.CalisanID &&
-                r.Saat <= randevu.Saat.AddMinutes(30) &&
-                r.Saat >= randevu.Saat.AddMinutes(-30));
+                r.CalisanID == model.CalisanID &&
+                (
+                    (model.Saat >= r.Saat && model.Saat < r.Saat.AddMinutes(islem.Sure)) || // Yeni randevu, mevcut randevuyla çakışıyor
+                    (randevuBitisSaati > r.Saat && randevuBitisSaati <= r.Saat.AddMinutes(islem.Sure)) // Mevcut randevu, yeni randevunun içine çakışıyor
+                ));
 
             if (isOverlapping)
             {
@@ -87,28 +98,25 @@ public class RandevuController : Controller
                 return View(model);
             }
 
-            // Veritabanına ekleme
-            try
+            // Randevu ekle
+            var randevu = new Randevu
             {
-                _context.Randevular.Add(randevu);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation($"Randevu ID {randevu.ID} başarıyla oluşturuldu.");
-                TempData["SuccessMessage"] = "Randevu başarıyla oluşturuldu.";
-                return RedirectToAction("Index", "Home");
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError($"Randevu kaydedilirken veritabanı hatası: {ex.Message}");
-                ModelState.AddModelError("", "Randevu kaydedilirken bir hata oluştu.");
-                model.IslemListesi = await _context.Islemler.ToListAsync();
-                model.CalisanListesi = await _context.Calisanlar.ToListAsync();
-                model.KullaniciListesi = await _context.Users.ToListAsync();
-                return View(model);
-            }
+                KullaniciID = model.KullaniciID,
+                CalisanID = model.CalisanID,
+                IslemID = model.IslemID,
+                Saat = model.Saat,
+                Durum = "Beklemede"
+            };
+
+            _context.Randevular.Add(randevu);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Randevu başarıyla oluşturuldu.";
+            return RedirectToAction("Index", "Home");
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Randevu oluşturulurken beklenmeyen hata: {ex.Message}");
+            // Hata loglama ve kullanıcıya bilgi verme
+            _logger.LogError($"Randevu oluşturulurken hata: {ex.Message}");
             TempData["ErrorMessage"] = "Randevu oluşturulurken bir hata oluştu.";
             return RedirectToAction("Index", "Home");
         }

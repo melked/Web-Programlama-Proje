@@ -15,7 +15,7 @@
         </div>
         <div class="form-group mt-3">
             <label for="CalisanID">Çalışan Seçimi</label>
-            <select id="CalisanID" name="CalisanID" class="form-control" required>
+            <select id="CalisanID" name="CalisanID" class="form-control" onchange="updateAvailability()" required>
                 <option value="">Çalışan Seçin</option>
                 @foreach (var calisan in Model.CalisanListesi)
                 {
@@ -23,6 +23,7 @@
                 }
             </select>
         </div>
+        <p id="availabilityInfo" class="text-info"></p>
         <div class="form-group mt-3">
             <label for="IslemID">Hizmet Seçimi</label>
             <select id="IslemID" name="IslemID" class="form-control" required>
@@ -40,3 +41,16 @@
         <button type="submit" class="btn btn-primary mt-3">Randevu Al</button>
     </form>
 </div>
+
+<script>
+    function updateAvailability() {
+        const selectedCalisanID = document.querySelector('select[name="CalisanID"]').value;
+        const calisan = @Html.Raw(Json.Serialize(Model.CalisanListesi));
+        const selectedCalisan = calisan.find(c => c.ID == selectedCalisanID);
+
+        if (selectedCalisan) {
+            document.getElementById("availabilityInfo").innerText =
+                `Bu çalışan sadece ${selectedCalisan.MusaitlikBaslangic} - ${selectedCalisan.MusaitlikBitis} saatleri arasında müsaittir.`;
+        }
+    }
+</script>

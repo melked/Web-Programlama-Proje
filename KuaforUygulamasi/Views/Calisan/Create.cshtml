@@ -1,14 +1,35 @@
 ﻿@model KuaforUygulamasi.Models.Calisan
 
 <h2>Yeni Çalışan Ekle</h2>
-<form method="post">
-    <label>Ad:</label>
-    <input asp-for="Ad" />
-    <label>Soyad:</label>
-    <input asp-for="Soyad" />
-    <label>Uzmanlık Alanları:</label>
-    <input asp-for="UzmanlikAlanlari" />
-    <label>Müsaitlik Saatleri:</label>
-    <input asp-for="MusaitlikSaatleri" />
-    <button type="submit">Ekle</button>
+<form method="post" class="form-horizontal">
+    <div class="form-group">
+        <label for="Ad">Ad:</label>
+        <input asp-for="Ad" class="form-control" />
+        <span asp-validation-for="Ad" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Soyad">Soyad:</label>
+        <input asp-for="Soyad" class="form-control" />
+        <span asp-validation-for="Soyad" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="UzmanlikAlanlari">Uzmanlık Alanları:</label>
+        <input asp-for="UzmanlikAlanlari" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="MusaitlikBaslangic">Müsaitlik Başlangıç Saati:</label>
+        <input asp-for="MusaitlikBaslangic" type="time" class="form-control" />
+        <span asp-validation-for="MusaitlikBaslangic" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="MusaitlikBitis">Müsaitlik Bitiş Saati:</label>
+        <input asp-for="MusaitlikBitis" type="time" class="form-control" />
+        <span asp-validation-for="MusaitlikBitis" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Ekle</button>
 </form>

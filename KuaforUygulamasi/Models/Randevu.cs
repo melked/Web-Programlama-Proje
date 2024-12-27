@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using KuaforUygulamasi.Models;
 
 namespace KuaforUygulamasi.Models
 {
@@ -15,15 +14,19 @@ namespace KuaforUygulamasi.Models
 
         [Required]
         public int CalisanID { get; set; } // Foreign Key
+        [ForeignKey("CalisanID")]
         public Calisan Calisan { get; set; } // Navigation Property
 
         [Required]
         public int IslemID { get; set; } // Foreign Key
+        [ForeignKey("IslemID")]
         public Islem Islem { get; set; } // Navigation Property
 
         [Required]
-        public DateTime Saat { get; set; }
+        public DateTime Saat { get; set; } // Randevu saati
 
-        public string Durum { get; set; } // "Onaylandı" veya "Beklemede"
+        [Required]
+        [StringLength(50)]
+        public string Durum { get; set; } // Örn: "Onaylandı" veya "Beklemede"
     }
 }
