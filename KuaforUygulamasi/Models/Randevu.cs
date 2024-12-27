@@ -1,32 +1,31 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
+﻿using KuaforUygulamasi.Models;
+using System.ComponentModel.DataAnnotations;
 namespace KuaforUygulamasi.Models
 {
     public class Randevu
     {
         public int ID { get; set; }
 
-        [Required]
-        public string KullaniciID { get; set; } // Foreign Key
-        [ForeignKey("KullaniciID")]
-        public Kullanici Kullanici { get; set; } // Navigation Property
+        [Required(ErrorMessage = "Müşteri seçimi zorunludur")]
+        public string KullaniciId { get; set; }
 
-        [Required]
-        public int CalisanID { get; set; } // Foreign Key
-        [ForeignKey("CalisanID")]
-        public Calisan Calisan { get; set; } // Navigation Property
+        public virtual Kullanici? Kullanici { get; set; }
 
-        [Required]
-        public int IslemID { get; set; } // Foreign Key
-        [ForeignKey("IslemID")]
-        public Islem Islem { get; set; } // Navigation Property
+        [Required(ErrorMessage = "Çalışan seçimi zorunludur")]
+        public int CalisanID { get; set; }
 
-        [Required]
-        public DateTime Saat { get; set; } // Randevu saati
+        public virtual Calisan? Calisan { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "İşlem seçimi zorunludur")]
+        public int IslemID { get; set; }
+
+        public virtual Islem? Islem { get; set; }
+
+        [Required(ErrorMessage = "Randevu saati zorunludur")]
+        public DateTimeOffset Saat { get; set; } // DateTime yerine DateTimeOffset kullanalım
+
+        [Required(ErrorMessage = "Durum alanı zorunludur")]
         [StringLength(50)]
-        public string Durum { get; set; } // Örn: "Onaylandı" veya "Beklemede"
+        public string Durum { get; set; } = "Beklemede";
     }
 }

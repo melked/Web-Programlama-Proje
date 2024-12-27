@@ -1,31 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace KuaforUygulamasi.Models
 {
     public class RandevuViewModel
     {
-        public int ID { get; set; }
-
-        [Required]
+        [Required(ErrorMessage = "Kullanıcı seçimi zorunludur")]
         public string KullaniciID { get; set; }
-        public Kullanici Kullanici { get; set; } // Kullanıcı bilgileri
 
-        [Required]
+        [Required(ErrorMessage = "Çalışan seçimi zorunludur")]
         public int CalisanID { get; set; }
-        public Calisan Calisan { get; set; } // Çalışan bilgileri
 
-        [Required]
+        [Required(ErrorMessage = "İşlem seçimi zorunludur")]
         public int IslemID { get; set; }
-        public Islem Islem { get; set; } // İşlem bilgileri
 
-        [Required]
-        [DataType(DataType.DateTime)]
-        public DateTime Saat { get; set; } // Randevu saati
+        [Required(ErrorMessage = "Randevu saati zorunludur")]
+        public DateTime Saat { get; set; }
 
-        [StringLength(50)]
-        public string Durum { get; set; } // Randevu durumu ("Beklemede", "Onaylandı")
-
-        // Kullanıcı, çalışan ve işlem listelerini doldurmak için
         public List<Kullanici> KullaniciListesi { get; set; }
         public List<Calisan> CalisanListesi { get; set; }
         public List<Islem> IslemListesi { get; set; }

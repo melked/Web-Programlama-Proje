@@ -1,56 +1,64 @@
-﻿@model KuaforUygulamasi.Models.RandevuViewModel
+﻿@model KuaforUygulamasi.Models.Randevu
+<div class="container mt-4">
+    <h2>Yeni Randevu</h2>
 
-<div class="container mt-5">
-    <h2>Randevu Al</h2>
-    <form asp-controller="Randevu" asp-action="Create" method="post">
-        <div class="form-group">
-            <label for="KullaniciID">Kullanıcı Seçimi</label>
-            <select id="KullaniciID" name="KullaniciID" class="form-control" required>
-                <option value="">Kullanıcı Seçin</option>
-                @foreach (var kullanici in Model.KullaniciListesi)
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <form asp-action="Create" method="post">
+        <!-- Müşteri Seçimi -->
+        <div class="mb-3">
+            <label asp-for="KullaniciId" class="form-label">Müşteri *</label>
+            <select asp-for="KullaniciId" class="form-select">
+                <option value="">Müşteri Seçiniz...</option>
+                @foreach (var kullanici in ViewBag.KullaniciListesi)
                 {
-                    <option value="@kullanici.Id">@kullanici.UserName</option>
+                    <option value="@kullanici.Id">@kullanici.Ad @kullanici.Soyad</option>
                 }
             </select>
+            <span asp-validation-for="KullaniciId" class="text-danger"></span>
         </div>
-        <div class="form-group mt-3">
-            <label for="CalisanID">Çalışan Seçimi</label>
-            <select id="CalisanID" name="CalisanID" class="form-control" onchange="updateAvailability()" required>
-                <option value="">Çalışan Seçin</option>
-                @foreach (var calisan in Model.CalisanListesi)
+
+        <!-- Çalışan Seçimi -->
+        <div class="mb-3">
+            <label asp-for="CalisanID" class="form-label">Çalışan *</label>
+            <select asp-for="CalisanID" class="form-select">
+                <option value="">Çalışan Seçiniz...</option>
+                @foreach (var calisan in ViewBag.CalisanListesi)
                 {
                     <option value="@calisan.ID">@calisan.Ad @calisan.Soyad</option>
                 }
             </select>
+            <span asp-validation-for="CalisanID" class="text-danger"></span>
         </div>
-        <p id="availabilityInfo" class="text-info"></p>
-        <div class="form-group mt-3">
-            <label for="IslemID">Hizmet Seçimi</label>
-            <select id="IslemID" name="IslemID" class="form-control" required>
-                <option value="">Hizmet Seçin</option>
-                @foreach (var islem in Model.IslemListesi)
+
+        <!-- İşlem Seçimi -->
+        <div class="mb-3">
+            <label asp-for="IslemID" class="form-label">İşlem *</label>
+            <select asp-for="IslemID" class="form-select">
+                <option value="">İşlem Seçiniz...</option>
+                @foreach (var islem in ViewBag.IslemListesi)
                 {
-                    <option value="@islem.ID">@islem.Ad - @islem.Ucret ₺</option>
+                    <option value="@islem.ID">@islem.Ad - @islem.Sure dk</option>
                 }
             </select>
+            <span asp-validation-for="IslemID" class="text-danger"></span>
         </div>
-        <div class="form-group mt-3">
-            <label for="Saat">Tarih ve Saat</label>
-            <input type="datetime-local" id="Saat" name="Saat" class="form-control" required />
+
+        <!-- Randevu Zamanı -->
+        <div class="mb-3">
+            <label asp-for="Saat" class="form-label">Randevu Zamanı *</label>
+            <input asp-for="Saat" type="datetime-local" class="form-control" required />
+            <span asp-validation-for="Saat" class="text-danger"></span>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Randevu Al</button>
+
+        <!-- Butonlar -->
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Randevu Oluştur</button>
+            <a asp-action="Index" class="btn btn-secondary">İptal</a>
+        </div>
     </form>
 </div>
 
-<script>
-    function updateAvailability() {
-        const selectedCalisanID = document.querySelector('select[name="CalisanID"]').value;
-        const calisan = @Html.Raw(Json.Serialize(Model.CalisanListesi));
-        const selectedCalisan = calisan.find(c => c.ID == selectedCalisanID);
-
-        if (selectedCalisan) {
-            document.getElementById("availabilityInfo").innerText =
-                `Bu çalışan sadece ${selectedCalisan.MusaitlikBaslangic} - ${selectedCalisan.MusaitlikBitis} saatleri arasında müsaittir.`;
-        }
-    }
-</script>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

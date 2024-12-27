@@ -1,42 +1,39 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using KuaforUygulamasi.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using KuaforUygulamasi.Models;
 
-namespace KuaforUygulamasi.Data
+public class ApplicationDbContext : IdentityDbContext<Kullanici>
 {
-    public class ApplicationDbContext : IdentityDbContext<Kullanici>
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
+    }
 
-        // Tabloları temsil eden DbSet'ler
-        public DbSet<Randevu> Randevular { get; set; }
-        public DbSet<Calisan> Calisanlar { get; set; }
-        public DbSet<Islem> Islemler { get; set; }
+    public DbSet<Randevu> Randevular { get; set; }
+    public DbSet<Calisan> Calisanlar { get; set; }
+    public DbSet<Islem> Islemler { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
 
-            // Randevu ile Kullanıcı ilişkisi
-            modelBuilder.Entity<Randevu>()
-                .HasOne(r => r.Kullanici)
-                .WithMany()
-                .HasForeignKey(r => r.KullaniciID);
+        // Configure relationships
+        builder.Entity<Randevu>()
+            .HasOne(r => r.Kullanici)
+            .WithMany()
+            .HasForeignKey(r => r.KullaniciId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            // Randevu ile Çalışan ilişkisi
-            modelBuilder.Entity<Randevu>()
-                .HasOne(r => r.Calisan)
-                .WithMany()
-                .HasForeignKey(r => r.CalisanID);
+        builder.Entity<Randevu>()
+            .HasOne(r => r.Calisan)
+            .WithMany()
+            .HasForeignKey(r => r.CalisanID)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            // Randevu ile İşlem ilişkisi
-            modelBuilder.Entity<Randevu>()
-                .HasOne(r => r.Islem)
-                .WithMany()
-                .HasForeignKey(r => r.IslemID);
-        }
+        builder.Entity<Randevu>()
+            .HasOne(r => r.Islem)
+            .WithMany()
+            .HasForeignKey(r => r.IslemID)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
