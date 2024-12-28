@@ -183,5 +183,9 @@ namespace KuaforUygulamasi.Controllers
         {
             return _context.Calisanlar.Any(e => e.ID == id);
         }
+
+
+
+
     }
 }

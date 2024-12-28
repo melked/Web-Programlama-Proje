@@ -6,18 +6,55 @@
 
 <h2>Yeni İşlem Ekle</h2>
 
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+@if (ViewBag.DbError != null)
+{
+    <div class="alert alert-danger">@ViewBag.DbError</div>
+}
+
+@if (ViewBag.ValidationErrors != null)
+{
+    <div class="alert alert-warning">@ViewBag.ValidationErrors</div>
+}
+
+@if (ViewBag.IslemData != null)
+{
+    <div class="alert alert-info">@ViewBag.IslemData</div>
+}
+
+@if (ViewBag.Success != null)
+{
+    <div class="alert alert-success">@ViewBag.Success</div>
+}
+
 <form asp-action="Create" method="post">
     <div class="form-group">
-        <label asp-for="Ad"></label>
-        <input asp-for="Ad" class="form-control" required />
-    </div>
-    <div class="form-group">
-        <label asp-for="Sure"></label>
+        <label asp-for="Sure">Süre (Dakika)</label>
         <input asp-for="Sure" class="form-control" required />
+        <span asp-validation-for="Sure" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="Ucret"></label>
+        <label asp-for="Ucret">Ücret (₺)</label>
         <input asp-for="Ucret" class="form-control" required />
+        <span asp-validation-for="Ucret" class="text-danger"></span>
     </div>
+
+    <div class="form-group">
+        <label asp-for="UzmanlikAlani">Uzmanlık Alanı</label>
+        <select asp-for="UzmanlikAlani" class="form-control" required>
+            <option value="">Seçiniz...</option>
+            @foreach (var item in Enum.GetValues(typeof(UzmanlikAlani)))
+            {
+                <option value="@item">@item</option>
+            }
+        </select>
+        <span asp-validation-for="UzmanlikAlani" class="text-danger"></span>
+    </div>
+
     <button type="submit" class="btn btn-primary mt-3">Ekle</button>
 </form>

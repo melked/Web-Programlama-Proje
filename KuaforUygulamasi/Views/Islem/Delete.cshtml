@@ -1,0 +1,17 @@
+﻿@model KuaforUygulamasi.Models.Islem
+
+@{
+    ViewData["Title"] = "İşlem Sil";
+}
+
+<h2>İşlem Sil</h2>
+
+<div class="alert alert-danger">
+    <strong>Uyarı!</strong> Bu işlemi silmek istediğinizden emin misiniz?
+</div>
+
+<form asp-action="DeleteConfirmed" asp-route-id="@Model.ID" method="post">
+    <input type="hidden" asp-for="ID" />
+    <button type="submit" class="btn btn-danger">Evet, Sil</button>
+    <a asp-action="Index" class="btn btn-secondary">Hayır, İptal Et</a>
+</form>

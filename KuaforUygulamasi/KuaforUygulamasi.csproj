@@ -28,10 +28,12 @@
     <None Remove="Views\Account\" />
     <None Remove="Views\Calisan\" />
     <None Remove="Views\Islem\" />
+    <None Remove="Services\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Account\" />
     <Folder Include="Views\Islem\" />
+    <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Data\Migrations\20241227132107_ModelUpdate.Designer.cs" />

@@ -31,19 +31,40 @@ namespace KuaforUygulamasi.Controllers
             return View();
         }
 
-        // POST: Islem/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Islem islem)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Islemler.Add(islem);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                islem.Ad = "Varsayılan";
+
+                // Ad alanı için validation'ı kaldır
+                ModelState.Remove("Ad");
+
+                if (ModelState.IsValid)
+                {
+                    _context.Islemler.Add(islem);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                ViewBag.Errors = errors;
+                return View(islem);
             }
-            return View(islem);
+            catch (Exception ex)
+            {
+                ViewBag.Error = $"Bir hata oluştu: {ex.Message}";
+                return View(islem);
+            }
         }
+
+
 
         // GET: Islem/Edit/5
         [HttpGet]
@@ -117,8 +138,7 @@ namespace KuaforUygulamasi.Controllers
             return View(islem);
         }
 
-        // POST: Islem/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -131,6 +151,9 @@ namespace KuaforUygulamasi.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+
+
 
         private bool IslemExists(int id)
         {

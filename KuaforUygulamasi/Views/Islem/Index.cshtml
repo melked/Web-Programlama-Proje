@@ -12,9 +12,9 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Ad</th>
             <th>Süre (Dakika)</th>
             <th>Ücret (₺)</th>
+            <th>Uzmanlık Alanı</th> 
             <th>İşlemler</th>
         </tr>
     </thead>
@@ -23,9 +23,9 @@
         {
             <tr>
                 <td>@islem.ID</td>
-                <td>@islem.Ad</td>
                 <td>@islem.Sure</td>
                 <td>@islem.Ucret.ToString("F2") ₺</td>
+                <td>@islem.UzmanlikAlani</td> <!-- Uzmanlık alanını burada gösteriyoruz -->
                 <td>
                     <a asp-action="Edit" asp-route-id="@islem.ID" class="btn btn-sm btn-warning">Düzenle</a>
                     <a asp-action="Delete" asp-route-id="@islem.ID" class="btn btn-sm btn-danger">Sil</a>

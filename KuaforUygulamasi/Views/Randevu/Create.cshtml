@@ -1,4 +1,5 @@
 ﻿@model KuaforUygulamasi.Models.Randevu
+
 <div class="container mt-4">
     <h2>Yeni Randevu</h2>
 
@@ -15,7 +16,7 @@
         <!-- Çalışan Seçimi -->
         <div class="mb-3">
             <label asp-for="CalisanID" class="form-label">Çalışan *</label>
-            <select asp-for="CalisanID" class="form-select">
+            <select asp-for="CalisanID" class="form-select" id="calisanSecimi" onchange="guncelleDoluSaatler()">
                 <option value="">Çalışan Seçiniz...</option>
                 @foreach (var calisan in ViewBag.CalisanListesi)
                 {
@@ -28,11 +29,11 @@
         <!-- İşlem Seçimi -->
         <div class="mb-3">
             <label asp-for="IslemID" class="form-label">İşlem *</label>
-            <select asp-for="IslemID" class="form-select">
+            <select asp-for="IslemID" class="form-select" id="islemSecimi">
                 <option value="">İşlem Seçiniz...</option>
                 @foreach (var islem in ViewBag.IslemListesi)
                 {
-                    <option value="@islem.ID">@islem.Ad - @islem.Sure dk</option>
+                    <option value="@islem.ID">@islem.UzmanlikAlani - @islem.Sure dk</option>
                 }
             </select>
             <span asp-validation-for="IslemID" class="text-danger"></span>
@@ -41,8 +42,16 @@
         <!-- Randevu Zamanı -->
         <div class="mb-3">
             <label asp-for="Saat" class="form-label">Randevu Zamanı *</label>
-            <input asp-for="Saat" type="datetime-local" class="form-control" required />
+            <input asp-for="Saat" type="datetime-local" class="form-control" id="saatSecimi" required />
             <span asp-validation-for="Saat" class="text-danger"></span>
+        </div>
+
+        <!-- Dolu Saatler -->
+        <div class="mb-3">
+            <label class="form-label">Dolu Saatler</label>
+            <ul id="doluSaatler" class="list-group">
+                <li class="list-group-item">Lütfen çalışan seçiniz.</li>
+            </ul>
         </div>
 
         <!-- Butonlar -->
@@ -55,4 +64,62 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        const doluSaatlerData = @Html.Raw(Json.Serialize(ViewBag.DoluSaatler ?? new List<string>()));
+
+        // Çalışan seçildiğinde dolu saatleri güncelle
+        function guncelleDoluSaatler() {
+            const calisanId = document.getElementById('calisanSecimi').value;
+            const doluSaatlerList = document.getElementById('doluSaatler');
+            doluSaatlerList.innerHTML = '';
+
+            if (calisanId && doluSaatlerData[calisanId]) {
+                doluSaatlerData[calisanId].forEach(saat => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item';
+                    listItem.textContent = saat;
+                    doluSaatlerList.appendChild(listItem);
+                });
+            } else {
+                doluSaatlerList.innerHTML = '<li class="list-group-item">Lütfen çalışan seçiniz.</li>';
+            }
+        }
+
+        // Tarih ve işlem süresi çakışmasını kontrol et
+        function kontrolEtCakisma(secilenTarih, secilenIslemSuresi) {
+            const calisanId = document.getElementById('calisanSecimi').value;
+            if (!calisanId || !doluSaatlerData[calisanId]) return false;
+
+            const secilenBaslangic = new Date(secilenTarih);
+            const secilenBitis = new Date(secilenTarih);
+            secilenBitis.setMinutes(secilenBitis.getMinutes() + parseInt(secilenIslemSuresi));
+
+            return doluSaatlerData[calisanId].some(doluSaat => {
+                const doluBaslangic = new Date(doluSaat);
+                const doluBitis = new Date(doluSaat);
+                doluBitis.setMinutes(doluBitis.getMinutes() + parseInt(secilenIslemSuresi));
+
+                return (secilenBaslangic < doluBitis && secilenBitis > doluBaslangic);
+            });
+        }
+
+        // Form gönderildiğinde çakışmayı kontrol et
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const secilenTarih = document.getElementById('saatSecimi').value;
+            const secilenIslem = document.getElementById('islemSecimi');
+            const secilenIslemSuresi = secilenIslem.options[secilenIslem.selectedIndex]?.text?.split('-')[1]?.replace('dk', '')?.trim();
+
+            if (!secilenTarih || !secilenIslemSuresi) {
+                alert('Lütfen tüm alanları doldurun.');
+                e.preventDefault();
+                return;
+            }
+
+            if (kontrolEtCakisma(secilenTarih, secilenIslemSuresi)) {
+                alert('Seçilen saat ve süre çakışıyor. Lütfen farklı bir zaman seçin.');
+                e.preventDefault();
+            }
+        });
+    </script>
 }

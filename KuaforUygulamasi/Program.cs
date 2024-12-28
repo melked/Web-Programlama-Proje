@@ -1,8 +1,7 @@
 ﻿using KuaforUygulamasi.Data;
-using KuaforUygulamasi.Models;
+using KuaforUygulamasi.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +34,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // MVC servisini ekle
 builder.Services.AddControllersWithViews();
+
+// Background service'i ekle
+builder.Services.AddHostedService<RandevuOnayService>(); // RandevuOnayService'ini hosted service olarak kaydedin
 
 var app = builder.Build();
 
@@ -105,7 +107,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -128,9 +129,6 @@ app.MapControllerRoute(
     pattern: "Calisan/{action=Create}/{id?}",
     defaults: new { controller = "Calisan" });
 
-app.MapControllerRoute(
-    name: "islem",
-    pattern: "Islem/{action=Index}/{id?}",
-    defaults: new { controller = "Islem" });
+
 
 app.Run();
