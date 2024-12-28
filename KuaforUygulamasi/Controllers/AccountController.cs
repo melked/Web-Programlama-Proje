@@ -44,7 +44,13 @@ namespace KuaforUygulamasi.Controllers
             var result = await _signInManager.PasswordSignInAsync(user.UserName, sifre, isPersistent: true, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                // Kullanıcı rolüne göre yönlendirme
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    return RedirectToAction("Index", "Admin"); // Admin sayfasına yönlendirme
+                }
+
+                return RedirectToAction("Index", "Home"); // Normal kullanıcı için yönlendirme
             }
 
             ModelState.AddModelError("", "Geçersiz e-posta veya şifre.");
@@ -148,8 +154,5 @@ namespace KuaforUygulamasi.Controllers
             ModelState.AddModelError("", "Geçersiz giriş bilgileri.");
             return View();
         }
-
-
-
     }
 }

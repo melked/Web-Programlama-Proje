@@ -32,37 +32,37 @@ namespace KuaforUygulamasi.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Islem islem)
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Create(Islem islem)
+{
+    try
+    {
+        islem.Ad = "Varsayılan";
+        
+        // Ad alanı için validation'ı kaldır
+        ModelState.Remove("Ad");
+
+        if (ModelState.IsValid)
         {
-            try
-            {
-                islem.Ad = "Varsayılan";
-
-                // Ad alanı için validation'ı kaldır
-                ModelState.Remove("Ad");
-
-                if (ModelState.IsValid)
-                {
-                    _context.Islemler.Add(islem);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-
-                ViewBag.Errors = errors;
-                return View(islem);
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = $"Bir hata oluştu: {ex.Message}";
-                return View(islem);
-            }
+            _context.Islemler.Add(islem);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
+
+        var errors = ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+        
+        ViewBag.Errors = errors;
+        return View(islem);
+    }
+    catch (Exception ex)
+    {
+        ViewBag.Error = $"Bir hata oluştu: {ex.Message}";
+        return View(islem);
+    }
+}
 
 
 

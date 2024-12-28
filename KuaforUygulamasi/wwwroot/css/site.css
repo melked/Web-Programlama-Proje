@@ -1,22 +1,64 @@
-﻿html {
-  font-size: 14px;
+﻿/* Renk değişkenlerini tanımlama */
+:root {
+    --primary-color: #D4AF37; /* Altın */
+    --secondary-color: #FFFFFF; /* Beyaz */
+    --accent-color: #000000; /* Siyah */
+    --background-color: #F5F5F5; /* Gri */
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
+/* Temel HTML ve gövde ayarları */
 html {
-  position: relative;
-  min-height: 100%;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+}
+
+/* Daha büyük ekranlarda font boyutunu artırma */
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
 }
 
 body {
-  margin-bottom: 60px;
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--background-color);
+    color: var(--accent-color);
+    margin-bottom: 60px; /* Footer için boşluk bırak */
 }
+
+/* Odaklanma için görsel iyileştirmeler */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s;
+}
+
+.bg-primary {
+    background-color: #258cfb !important;
+}
+
+.btn-primary {
+    background-color: #ffcc00;
+    border-color: #ffcc00;
+    color: #333;
+}
+
+    .btn-primary:hover {
+        background-color: #ffb700;
+        border-color: #ffb700;
+    }
+
+.card-img-top {
+    height: 200px; /* İstediğiniz sabit yükseklik */
+    object-fit: cover; /* Resimlerin oranını koruyarak kırpma */
+    width: 100%; /* Kart genişliği ile uyumlu */
+}
+
