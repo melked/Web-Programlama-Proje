@@ -8,14 +8,12 @@ Bu proje, Sakarya Üniversitesi Bilgisayar Mühendisliği Bölümü Web Programl
 Bu projede, ASP.NET Core MVC teknolojisi kullanılarak bay/bayan kuaför salonları için kapsamlı bir işletme yönetim uygulaması geliştirilmiştir. Projenin temel amaçları şunlardır:
 - Çalışan ve müşteri randevu süreçlerini kolaylaştırmak,
 - Çalışanların müsaitlik durumlarına göre uygun randevular oluşturmak,
-- REST API kullanarak veritabanı ile etkili bir şekilde haberleşmek,
-- Yapay zeka entegrasyonu ile saç modeli ve renk önerileri sunmak.
-
+- REST API kullanarak veritabanı ile etkili bir şekilde haberleşmek.
 ---
 
 ## Kullanılan Teknolojiler
 - **Backend:** ASP.NET Core 6 MVC, C#
-- **Frontend:** HTML5, CSS3, Bootstrap, JavaScript, jQuery
+- **Frontend:** HTML5, CSS3, Bootstrap, JavaScript
 - **Veritabanı:** SQL Server
 - **ORM:** Entity Framework Core
 - **API:** RESTful API ile veri akışı
