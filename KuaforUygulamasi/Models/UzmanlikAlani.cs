@@ -3,6 +3,7 @@
     public enum UzmanlikAlani
     {
         SacKesimi,
+        SakalKesimi,
         Boyama,
         Manikur,
         Pedikur,
