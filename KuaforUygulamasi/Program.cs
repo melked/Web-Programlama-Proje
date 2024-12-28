@@ -11,17 +11,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-// Kimlik doğrulama servislerini ekle
 builder.Services.AddDefaultIdentity<Kullanici>(options =>
 {
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 6;
-    options.Password.RequireNonAlphanumeric = false;
+    // Şifre gereksinimlerini daha esnek hale getirin
+    options.Password.RequireDigit = false; // Rakam gereksinimini kaldır
+    options.Password.RequireLowercase = false; // Küçük harf gereksinimini kaldır
+    options.Password.RequireUppercase = false; // Büyük harf gereksinimini kaldır
+    options.Password.RequiredLength = 3; // Şifrenin uzunluğunu 4 karakter olarak ayarla
+    options.Password.RequireNonAlphanumeric = false; // Özel karakter gereksinimini kaldır
 })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
 
 // Çerez yapılandırması
 builder.Services.ConfigureApplicationCookie(options =>
@@ -67,25 +68,25 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // Admin kullanıcı oluştur
-    var adminEmail = "OgrenciNuramarasi@sakarya.edu.tr";
-    var adminUser = await userManager.FindByEmailAsync(adminEmail);
-    if (adminUser == null)
+    // İlk Admin kullanıcıyı oluştur
+    var adminEmail1 = "G211210003@sakarya.edu.tr";
+    var adminUser1 = await userManager.FindByEmailAsync(adminEmail1);
+    if (adminUser1 == null)
     {
-        adminUser = new Kullanici
+        adminUser1 = new Kullanici
         {
-            UserName = adminEmail,
-            Email = adminEmail,
+            UserName = adminEmail1,
+            Email = adminEmail1,
             EmailConfirmed = true,
             Ad = "Admin",
             Soyad = "Kullanıcı",
             Rol = "Admin" // Rol değeri "Admin" olarak atanıyor
         };
 
-        var createResult = await userManager.CreateAsync(adminUser, "Admin123!");
-        if (!createResult.Succeeded)
+        var createResult1 = await userManager.CreateAsync(adminUser1, "sau");
+        if (!createResult1.Succeeded)
         {
-            foreach (var error in createResult.Errors)
+            foreach (var error in createResult1.Errors)
             {
                 Console.WriteLine($"Create User Error: {error.Description}");
             }
@@ -93,13 +94,52 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // Admin rolünü kullanıcıya ata
-    if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+    // İlk Admin rolünü kullanıcıya ata
+    if (!await userManager.IsInRoleAsync(adminUser1, "Admin"))
     {
-        var roleAssignResult = await userManager.AddToRoleAsync(adminUser, "Admin");
-        if (!roleAssignResult.Succeeded)
+        var roleAssignResult1 = await userManager.AddToRoleAsync(adminUser1, "Admin");
+        if (!roleAssignResult1.Succeeded)
         {
-            foreach (var error in roleAssignResult.Errors)
+            foreach (var error in roleAssignResult1.Errors)
+            {
+                Console.WriteLine($"Role Assign Error: {error.Description}");
+            }
+        }
+    }
+
+    // İkinci Admin kullanıcıyı oluştur
+    var adminEmail2 = "G221210021@sakarya.edu.tr";
+    var adminUser2 = await userManager.FindByEmailAsync(adminEmail2);
+    if (adminUser2 == null)
+    {
+        adminUser2 = new Kullanici
+        {
+            UserName = adminEmail2,
+            Email = adminEmail2,
+            EmailConfirmed = true,
+            Ad = "Admin",
+            Soyad = "Kullanıcı2",
+            Rol = "Admin" // Rol değeri "Admin" olarak atanıyor
+        };
+
+        var createResult2 = await userManager.CreateAsync(adminUser2, "sau");
+        if (!createResult2.Succeeded)
+        {
+            foreach (var error in createResult2.Errors)
+            {
+                Console.WriteLine($"Create User Error: {error.Description}");
+            }
+            return;
+        }
+    }
+
+    // İkinci Admin rolünü kullanıcıya ata
+    if (!await userManager.IsInRoleAsync(adminUser2, "Admin"))
+    {
+        var roleAssignResult2 = await userManager.AddToRoleAsync(adminUser2, "Admin");
+        if (!roleAssignResult2.Succeeded)
+        {
+            foreach (var error in roleAssignResult2.Errors)
             {
                 Console.WriteLine($"Role Assign Error: {error.Description}");
             }
@@ -128,7 +168,5 @@ app.MapControllerRoute(
     name: "calisan",
     pattern: "Calisan/{action=Create}/{id?}",
     defaults: new { controller = "Calisan" });
-
-
 
 app.Run();

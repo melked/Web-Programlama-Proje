@@ -1,56 +1,64 @@
 ﻿@model IEnumerable<KuaforUygulamasi.Models.Randevu>
 
-@using System.Security.Claims  <!-- Burada ClaimTypes'ı kullanabilmek için ekliyoruz -->
+@{
+    ViewData["Title"] = "Admin Randevu Listesi";
+}
 
-<div class="container mt-4">
-    <h2>Randevu Listesi</h2>
+<h2>Admin Randevu Listesi</h2>
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["SuccessMessage"]
-        </div>
-    }
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["ErrorMessage"]
-        </div>
-    }
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
 
-    <table class="table">
-        <thead>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Müşteri</th>
+            <th>Çalışan</th>
+            <th>İşlem</th>
+            <th>Tarih ve Saat</th>
+            <th>Durum</th>
+            <th>İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var randevu in Model)
+        {
             <tr>
-                <th>#</th>
-                <th>Randevu Tarihi</th>
-                <th>Çalışan</th>
-                <th>İşlem</th>
-                <th>İşlemler</th>
+                <td>@randevu.Kullanici?.Ad</td>
+                <td>@randevu.Calisan?.Ad</td>
+                <td>@randevu.Islem?.UzmanlikAlani</td>
+                <td>@randevu.Saat.ToString("g")</td>
+                <td>
+                    @if (randevu.Durum == "Onaylı")
+                    {
+                        <span class="badge bg-success">Onaylı</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning">Beklemede</span>
+                    }
+                </td>
+                <td>
+                    @if (randevu.Durum != "Onaylı")
+                    {
+                        <form asp-action="Onayla" method="post">
+                            <input type="hidden" name="id" value="@randevu.ID" />
+                            <button type="submit" class="btn btn-sm btn-primary">Onayla</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Onaylanmış</span>
+                    }
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var randevu in Model)
-            {
-                <tr>
-                    <td>@randevu.ID</td>
-                    <td>@randevu.Saat.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@randevu.Calisan.Ad @randevu.Calisan.Soyad</td>
-                    <td>@randevu.Islem.Ad</td>
-                    <td>
-                        <!-- Detaylar -->
-                        <a href="@Url.Action("Details", "Randevu", new { id = randevu.ID })" class="btn btn-info">Detay</a>
-
-                        <!-- Silme işlemi sadece kullanıcıya ait randevular için yapılabilir -->
-                        @if (randevu.KullaniciId == User.FindFirstValue(ClaimTypes.NameIdentifier) || User.IsInRole("Admin"))
-                        {
-                            <form action="@Url.Action("Delete", "Randevu", new { id = randevu.ID })" method="post" style="display:inline;">
-                                @Html.AntiForgeryToken() <!-- Anti-forgery token ekliyoruz -->
-                                <button type="submit" class="btn btn-danger">Sil</button>
-                            </form>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+        }
+    </tbody>
+</table>

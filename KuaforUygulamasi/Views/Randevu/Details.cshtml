@@ -19,6 +19,29 @@
         <label class="form-label">Randevu Zamanı</label>
         <input type="text" class="form-control" value="@Model.Saat" disabled />
     </div>
+    <div class="mb-3">
+        <label class="form-label">Durum</label>
+        @if (Model.Durum == "Onaylı")
+        {
+            <span class="badge bg-success">Onaylı</span>
+        }
+        else if (Model.Durum == "Beklemede")
+        {
+            <span class="badge bg-warning text-dark">Beklemede</span>
+        }
+        else
+        {
+            <span class="badge bg-secondary">Bilinmiyor</span>
+        }
+    </div>
+
+    @if (User.IsInRole("Admin") && Model.Durum != "Onaylı")
+    {
+        <form asp-action="Onayla" method="post">
+            <input type="hidden" name="id" value="@Model.ID" />
+            <button type="submit" class="btn btn-sm btn-primary">Onayla</button>
+        </form>
+    }
 
     @if (User.IsInRole("Admin"))
     {

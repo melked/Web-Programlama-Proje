@@ -68,7 +68,6 @@
     <script>
         const doluSaatlerData = @Html.Raw(Json.Serialize(ViewBag.DoluSaatler ?? new List<string>()));
 
-        // Çalışan seçildiğinde dolu saatleri güncelle
         function guncelleDoluSaatler() {
             const calisanId = document.getElementById('calisanSecimi').value;
             const doluSaatlerList = document.getElementById('doluSaatler');
@@ -86,7 +85,6 @@
             }
         }
 
-        // Tarih ve işlem süresi çakışmasını kontrol et
         function kontrolEtCakisma(secilenTarih, secilenIslemSuresi) {
             const calisanId = document.getElementById('calisanSecimi').value;
             if (!calisanId || !doluSaatlerData[calisanId]) return false;
@@ -104,7 +102,6 @@
             });
         }
 
-        // Form gönderildiğinde çakışmayı kontrol et
         document.querySelector('form').addEventListener('submit', function (e) {
             const secilenTarih = document.getElementById('saatSecimi').value;
             const secilenIslem = document.getElementById('islemSecimi');
@@ -121,5 +118,6 @@
                 e.preventDefault();
             }
         });
+
     </script>
 }

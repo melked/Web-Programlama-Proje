@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
+using System.Security.Claims;
 
 namespace KuaforUygulamasi.Controllers
 {
@@ -244,6 +245,54 @@ namespace KuaforUygulamasi.Controllers
                 .Select(r => new { r.CalisanID, r.Saat, IslemSuresi = r.Islem.Sure })
                 .ToListAsync();
             return View(randevu);
+        }
+
+        // ✅ Kullanıcı için kendi randevularını görüntüleme
+        [Authorize]
+        public async Task<IActionResult> KullaniciRandevuListesi()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var randevular = await _context.Randevular
+                .Where(r => r.KullaniciId == userId)
+                .Include(r => r.Calisan)
+                .Include(r => r.Islem)
+                .ToListAsync();
+
+            return View(randevular);
+        }
+
+        // ✅ Admin için tüm randevuları görüntüleme ve onaylama
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AdminRandevuListesi()
+        {
+            var randevular = await _context.Randevular
+                .Include(r => r.Kullanici)
+                .Include(r => r.Calisan)
+                .Include(r => r.Islem)
+                .ToListAsync();
+
+            return View(randevular);
+        }
+
+        // ✅ Randevu Onaylama (Admin Yetkisi Gerektirir)
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Onayla(int id)
+        {
+            var randevu = await _context.Randevular.FindAsync(id);
+            if (randevu == null)
+            {
+                TempData["ErrorMessage"] = "Randevu bulunamadı.";
+                return RedirectToAction(nameof(AdminRandevuListesi));
+            }
+
+            randevu.Durum = "Onaylı";
+            _context.Randevular.Update(randevu);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Randevu başarıyla onaylandı.";
+            return RedirectToAction(nameof(AdminRandevuListesi));
         }
     }
 }
