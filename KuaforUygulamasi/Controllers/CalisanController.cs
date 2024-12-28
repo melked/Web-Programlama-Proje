@@ -3,9 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using KuaforUygulamasi.Data;
 using KuaforUygulamasi.Models;
 using KuaforUygulamasi.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace KuaforUygulamasi.Controllers
+
 {
+    [Authorize(Roles = "Admin")]
     public class CalisanController : Controller
     {
         private readonly ApplicationDbContext _context;

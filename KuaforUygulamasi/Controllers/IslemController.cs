@@ -1,10 +1,13 @@
-﻿using KuaforUygulamasi.Data;
+﻿using System.Data;
+using KuaforUygulamasi.Data;
 using KuaforUygulamasi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace KuaforUygulamasi.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class IslemController : Controller
     {
         private readonly ApplicationDbContext _context;

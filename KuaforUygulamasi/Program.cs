@@ -2,6 +2,7 @@
 using KuaforUygulamasi.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,67 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    var userManager = serviceProvider.GetRequiredService<UserManager<Kullanici>>();
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    // Admin rolü oluştur
+    if (!await roleManager.RoleExistsAsync("Admin"))
+    {
+        var roleResult = await roleManager.CreateAsync(new IdentityRole("Admin"));
+        if (!roleResult.Succeeded)
+        {
+            foreach (var error in roleResult.Errors)
+            {
+                Console.WriteLine($"Role Error: {error.Description}");
+            }
+            return;
+        }
+    }
+
+    // Admin kullanıcı oluştur
+    var adminEmail = "OgrenciNuramarasi@sakarya.edu.tr";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    if (adminUser == null)
+    {
+        adminUser = new Kullanici
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            EmailConfirmed = true,
+            Ad = "Admin",
+            Soyad = "Kullanıcı",
+            Rol = "Admin" // Rol değeri "Admin" olarak atanıyor
+        };
+
+        var createResult = await userManager.CreateAsync(adminUser, "Admin123!");
+        if (!createResult.Succeeded)
+        {
+            foreach (var error in createResult.Errors)
+            {
+                Console.WriteLine($"Create User Error: {error.Description}");
+            }
+            return;
+        }
+    }
+
+    // Admin rolünü kullanıcıya ata
+    if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+    {
+        var roleAssignResult = await userManager.AddToRoleAsync(adminUser, "Admin");
+        if (!roleAssignResult.Succeeded)
+        {
+            foreach (var error in roleAssignResult.Errors)
+            {
+                Console.WriteLine($"Role Assign Error: {error.Description}");
+            }
+        }
+    }
+}
+
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -51,6 +113,7 @@ app.UseRouting();
 app.UseAuthentication(); // Kimlik doğrulama
 app.UseAuthorization();  // Yetkilendirme
 
+// MVC Routing
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -69,6 +132,5 @@ app.MapControllerRoute(
     name: "islem",
     pattern: "Islem/{action=Index}/{id?}",
     defaults: new { controller = "Islem" });
-
 
 app.Run();

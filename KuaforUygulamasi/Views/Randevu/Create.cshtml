@@ -5,17 +5,11 @@
     <div asp-validation-summary="All" class="text-danger"></div>
 
     <form asp-action="Create" method="post">
-        <!-- Müşteri Seçimi -->
+        <!-- Giriş Yapan Kullanıcı Bilgisi -->
         <div class="mb-3">
-            <label asp-for="KullaniciId" class="form-label">Müşteri *</label>
-            <select asp-for="KullaniciId" class="form-select">
-                <option value="">Müşteri Seçiniz...</option>
-                @foreach (var kullanici in ViewBag.KullaniciListesi)
-                {
-                    <option value="@kullanici.Id">@kullanici.Ad @kullanici.Soyad</option>
-                }
-            </select>
-            <span asp-validation-for="KullaniciId" class="text-danger"></span>
+            <label class="form-label">Müşteri</label>
+            <input type="text" class="form-control" value="@User.Identity.Name" disabled />
+            <input type="hidden" asp-for="KullaniciId" value="@ViewBag.KullaniciId" />
         </div>
 
         <!-- Çalışan Seçimi -->

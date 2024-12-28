@@ -108,5 +108,48 @@ namespace KuaforUygulamasi.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        // GET: Admin Login
+        [HttpGet]
+        public IActionResult AdminLogin()
+        {
+            return View();
+        }
+
+        // POST: Admin Login
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AdminLogin(string email, string password)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                ModelState.AddModelError("", "E-posta ve şifre alanları doldurulmalıdır.");
+                return View();
+            }
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null || !await _userManager.IsInRoleAsync(user, "Admin"))
+            {
+                ModelState.AddModelError("", "Geçersiz giriş bilgileri.");
+                return View();
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, password, isPersistent: true, lockoutOnFailure: false);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index", "Admin"); // Admin ana sayfasına yönlendirin
+            }
+
+            ModelState.AddModelError("", "Geçersiz giriş bilgileri.");
+            return View();
+        }
+
+
+
     }
 }
